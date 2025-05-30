@@ -1,5 +1,7 @@
 package com.service.upay_services_service.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,11 @@ public class ServicesController {
     @GetMapping("servicesList")
     public Page<Services> getServices(@RequestParam("page") int page, @RequestParam("size") int size) {
         return servicesService.getServices(page, size);
+    }
+
+    @GetMapping("services")
+    public List<Services> getServicesList() {
+        return servicesService.getServicesList();
     }
 
     @GetMapping("id")

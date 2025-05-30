@@ -46,10 +46,10 @@ public class DealersController {
         return dealersService.uploadDealersCSV(file);
     }
 
-    @PutMapping("updateById")
-    public ResponseEntity<?> updateDealer(@RequestParam("id") Long id, @RequestBody DealersDTO dealersDTO)
+    @PutMapping("updateDealer")
+    public ResponseEntity<?> updateDealer(@RequestBody DealersDTO dealersDTO)
             throws IllegalArgumentException, IllegalAccessException {
-        return dealersService.updateDealer(id, dealersDTO);
+        return dealersService.updateDealer(dealersDTO);
     }
 
     @DeleteMapping("deleteById/{id}")

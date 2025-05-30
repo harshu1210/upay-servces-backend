@@ -48,14 +48,15 @@ public class DealersService {
       throws IllegalArgumentException, IllegalAccessException {
     log.info("Verifying All Required Parameters of Dealers");
     RequiredParams.requiredParams(dealersDTO, requiredParamsDealer);
-    log.info("Verifying All Required Parameters of BankDetails");
-    RequiredParams.requiredParams(dealersDTO.getBankDetails(), requiredParamsBankDetails);
+    // log.info("Verifying All Required Parameters of BankDetails");
+    // RequiredParams.requiredParams(dealersDTO.getBankDetails(), requiredParamsBankDetails);
     log.info("Checking is GST Number already Registered");
     Optional<Dealers> existingDealers = dealersRepo.findByGstNumber(dealersDTO.getGstNumber());
     if (existingDealers.isPresent()) {
       log.warn("Dealer with GST Number Already Registered");
       throw new RuntimeException("A Dealer with GST Number is Already Registered");
     }
+    dealersDTO.parseBankDetails();
     log.info("Converting DealersDTO to Dealse object");
     Dealers dealers = ConvertorUtility.dealersDtoConvertor(dealersDTO);
     log.info("Saving Dealer into Databse");
@@ -65,15 +66,16 @@ public class DealersService {
   }
 
   @Transactional
-  public ResponseEntity<?> updateDealer(Long id, DealersDTO dealersDTO)
+  public ResponseEntity<?> updateDealer(DealersDTO dealersDTO)
       throws IllegalArgumentException, IllegalAccessException {
     log.info("Verifying All Required Parameters of Dealers");
     RequiredParams.requiredParams(dealersDTO, requiredParamsDealer);
-    log.info("Verifying All Required Parameters of BankDetails");
-    RequiredParams.requiredParams(dealersDTO.getBankDetails(), requiredParamsBankDetails);
+    // log.info("Verifying All Required Parameters of BankDetails");
+    // RequiredParams.requiredParams(dealersDTO.getBankDetails(), requiredParamsBankDetails);
     log.info("Checking is GST Number already Registered");
-    Dealers existingDealers = dealersRepo.findById(id)
+    Dealers existingDealers = dealersRepo.findByGstNumber(dealersDTO.getGstNumber())
         .orElseThrow(() -> new RuntimeException("Dealer Not Found with ID"));
+    dealersDTO.parseBankDetails();
     existingDealers = updateDealersConfig(existingDealers, dealersDTO);
     log.info("Updating Dealer into Databse");
     dealersRepo.save(existingDealers);
@@ -122,9 +124,9 @@ public class DealersService {
   }
 
   private String[] requiredParamsDealer = { "companyName", "address", "businessPhoneNumber", "businessEmail",
-      "services", "gstNumber", "bankDetails" };
-  private String[] requiredParamsBankDetails = { "beneficiaryName", "bankName", "branchName", "accountNumber",
-      "ifsccode", "upiid" };
+      "services", "gstNumber", "bankDetailsJson" };
+  // private String[] requiredParamsBankDetails = { "beneficiaryName", "bankName", "branchName", "accountNumber",
+  //     "ifsccode", "upiid" };
 
   @Autowired
   private DealersRepo dealersRepo;

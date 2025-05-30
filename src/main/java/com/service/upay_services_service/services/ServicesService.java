@@ -56,6 +56,13 @@ public class ServicesService {
     return services;
   }
 
+  public List<Services> getServicesList() {
+    log.info("Fetching Services List");
+    List<Services> services = servicesRepo.findAll();
+    log.info("Fetched Services list");
+    return services;
+  }
+
   public Services getServicesById(Long id) {
     log.info("Fetching Services By ID");
     Services services = servicesRepo.findById(id)

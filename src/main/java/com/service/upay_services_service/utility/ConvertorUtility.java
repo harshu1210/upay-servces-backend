@@ -34,7 +34,7 @@ public class ConvertorUtility {
 
     public static Services servicesDtoConvertor(ServicesDTO servicesDTO) {
         Services services = new Services();
-        services.setLabel(servicesDTO.getLabel());
+        services.setLabel(servicesDTO.getLabel().trim());
         services.setValue(servicesDTO.getLabel().trim());
         return services;
     }

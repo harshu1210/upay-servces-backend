@@ -22,9 +22,9 @@ public class BulkUploadUtility {
             List<DealersDTO> records = csvToBean.parse();
 
             // Post-process to parse JSON into actual BankDetails object
-            for (DealersDTO dto : records) {
-                dto.parseBankDetails();
-            }
+            // for (DealersDTO dto : records) {
+            //     dto.parseBankDetails();
+            // }
 
             return records;
 
