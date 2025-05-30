@@ -1,4 +1,4 @@
-package com.service.utility;
+package com.service.upay_services_service.utility;
 
 import java.lang.reflect.Field;
 import lombok.extern.slf4j.Slf4j;

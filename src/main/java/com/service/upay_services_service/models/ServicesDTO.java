@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class ServicesDTO {
 
     private String label;
-    private String value;
 }

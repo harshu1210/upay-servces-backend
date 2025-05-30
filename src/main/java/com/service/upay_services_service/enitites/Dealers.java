@@ -43,7 +43,7 @@ public class Dealers {
     private String services;
 
     private boolean verifiedBuisnessEmail = Boolean.FALSE;
-
+    
     private boolean verifiedBuisnessPhoneNumber = Boolean.FALSE;
 
     private String gstNumber;

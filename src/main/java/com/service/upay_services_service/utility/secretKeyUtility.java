@@ -1,4 +1,4 @@
-package com.service.utility;
+package com.service.upay_services_service.utility;
 
 import java.util.Base64;
 import javax.crypto.SecretKey;
