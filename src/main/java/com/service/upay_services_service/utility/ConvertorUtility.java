@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.service.upay_services_service.enitites.Dealers;
+import com.service.upay_services_service.enitites.Orders;
 import com.service.upay_services_service.enitites.Services;
 import com.service.upay_services_service.enitites.User;
 import com.service.upay_services_service.models.DealersDTO;
+import com.service.upay_services_service.models.OrdersDTO;
 import com.service.upay_services_service.models.ServicesDTO;
 import com.service.upay_services_service.models.UserDTO;
 
@@ -56,6 +58,7 @@ public class ConvertorUtility {
         user.setFullName(userDTO.getFullName());
         user.setRole(userDTO.getRole());
         user.setUsername(userDTO.getUsername());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
         return user;
     }
 
@@ -66,7 +69,15 @@ public class ConvertorUtility {
         userDTO.setFullName(user.getFullName());
         userDTO.setRole(user.getRole());
         userDTO.setUsername(user.getUsername());
+        userDTO.setPhoneNumber(user.getPhoneNumber());
         return userDTO;
+    }
+
+    public static Orders userDTOConvertor(OrdersDTO orderDTO){
+        Orders order = new Orders();
+        order.setServices(orderDTO.getServices());
+        order.setVendor(orderDTO.getVendor());
+        return order;
     }
 
 }

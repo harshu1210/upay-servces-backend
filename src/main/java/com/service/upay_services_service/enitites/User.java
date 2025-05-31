@@ -38,6 +38,10 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    private String phoneNumber;
+
+    private String status;
+
     @Column(nullable = false)
     private boolean active = true;
 
