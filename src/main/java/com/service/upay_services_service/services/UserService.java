@@ -1,6 +1,7 @@
 package com.service.upay_services_service.services;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -60,7 +61,14 @@ public class UserService {
     public Page<UserDTO> getUser(int page, int size) {
         log.info("Getting Records");
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserDTO> userDTO = userRepo.customFindAll(pageable);
+        Page<UserDTO> userDTO = userRepo.customFindnotCustomer(pageable);
+        return userDTO;
+    }
+
+    public Page<UserDTO> getCustomer(int page, int size) {
+        log.info("Getting Records");
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserDTO> userDTO = userRepo.customFindCustomer(pageable);
         return userDTO;
     }
 
@@ -128,6 +136,10 @@ public class UserService {
 
         String refreshedToken = JwtUtil.generateToken(userDetails); // 30 mins
         return ResponseEntity.ok(Map.of("refresh",refreshedToken));
+    }
+
+    public List<String> getCustomerUser() {
+        return userRepo.customgetCustomers();
     }
 
     @Autowired

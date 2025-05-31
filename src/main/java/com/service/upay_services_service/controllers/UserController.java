@@ -1,5 +1,7 @@
 package com.service.upay_services_service.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,16 @@ public class UserController {
     @GetMapping("getUser")
     public Page<UserDTO> getUser(@RequestParam("size") int size, @RequestParam("page") int page) {
         return userService.getUser(page, size);
+    }
+
+    @GetMapping("getCustomer")
+    public Page<UserDTO> getCustomer(@RequestParam("size") int size, @RequestParam("page") int page) {
+        return userService.getCustomer(page, size);
+    }
+
+    @GetMapping("getCustomerUser")
+    public List<String> getCustomerUser() {
+        return userService.getCustomerUser();
     }
 
     @PostMapping("createUser")
