@@ -45,6 +45,7 @@ public class ServicesService {
     log.info("Registering Service in DB");
     servicesRepo.save(service);
     log.info("Service Registered Successfully");
+    userEmailService.sendRegistrationService(service.getLabel());
     return ResponseEntity.ok(Map.of("message", "Service Registered Successfully"));
   }
 
@@ -89,6 +90,7 @@ public class ServicesService {
     log.info("Fetched Service By ID\nDeleting Service");
     servicesRepo.delete(service);
     log.info("Service Deleted Successfully");
+    userEmailService.sendDeletionService(service.getLabel());
     return ResponseEntity.ok(Map.of("message", "Service Deleted"));
   }
 
@@ -99,12 +101,14 @@ public class ServicesService {
     log.info("Fetching Service By ID");
     Services existingServices = servicesRepo.findById(id)
         .orElseThrow(() -> new RuntimeException("No Service Found with ID"));
+    String oldService = existingServices.getLabel();
     if (!existingServices.getValue().equals(servicesDTO.getLabel().trim().replaceAll("\s", "").toLowerCase())) {
       log.info("Updating Service");
       existingServices.setLabel(servicesDTO.getLabel());
       existingServices.setValue(servicesDTO.getLabel().trim().replaceAll("\s", "").toLowerCase());
     }
     servicesRepo.save(existingServices);
+    userEmailService.sendUpdationService(oldService, servicesDTO.getLabel());
     return ResponseEntity.ok(Map.of("message", "Updated Service"));
   }
 
@@ -112,5 +116,8 @@ public class ServicesService {
 
   @Autowired
   private ServicesRepo servicesRepo;
+
+  @Autowired
+  private userEmailService userEmailService;
 
 }

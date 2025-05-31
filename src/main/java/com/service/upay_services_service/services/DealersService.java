@@ -62,6 +62,7 @@ public class DealersService {
     log.info("Saving Dealer into Databse");
     dealersRepo.save(dealers);
     log.info("Dealer Saved");
+    userEmailService.sendRegistrationDealer(dealers);
     return ResponseEntity.ok(Map.of("message", "Dealer Created SuccessFully"));
   }
 
@@ -75,11 +76,13 @@ public class DealersService {
     log.info("Checking is GST Number already Registered");
     Dealers existingDealers = dealersRepo.findByGstNumber(dealersDTO.getGstNumber())
         .orElseThrow(() -> new RuntimeException("Dealer Not Found with ID"));
+    Dealers oldDealer = existingDealers;
     dealersDTO.parseBankDetails();
     existingDealers = updateDealersConfig(existingDealers, dealersDTO);
     log.info("Updating Dealer into Databse");
     dealersRepo.save(existingDealers);
     log.info("Dealer Updated");
+    userEmailService.sendUpdationDealer(existingDealers, oldDealer);
     return ResponseEntity.ok(Map.of("message", "Dealer Updated SuccessFully"));
   }
 
@@ -101,6 +104,7 @@ public class DealersService {
     log.info("Fetched Dealer by ID");
     log.info("Deleting Dealer by ID");
     dealersRepo.delete(dealer);
+    userEmailService.sendDeletionDealer(dealer);
     return ResponseEntity.ok(Map.of("message", "Dealer Deleted Successfully"));
   }
 
@@ -130,5 +134,8 @@ public class DealersService {
 
   @Autowired
   private DealersRepo dealersRepo;
+
+  @Autowired
+  private userEmailService userEmailService;
 
 }
