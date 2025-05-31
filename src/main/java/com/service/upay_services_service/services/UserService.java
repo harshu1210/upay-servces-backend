@@ -2,6 +2,7 @@ package com.service.upay_services_service.services;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ public class UserService {
 
     public ResponseEntity<?> login(Login login) {
         log.info("Fetching User");
-        User existingUser = this.userRepo.findByEmailAndActive(login.getEmail(),Boolean.TRUE);
+        User existingUser = this.userRepo.findByEmailAndActive(login.getEmail(),Boolean.TRUE).orElseThrow(()-> new RuntimeException("User Not Found"));
         if(!encoder.matches(login.getPasswordHash(), existingUser.getPasswordHash())){
             throw new RuntimeException("Password is Incorrect");
         }
@@ -47,6 +48,15 @@ public class UserService {
         return ResponseEntity.ok(map);
     }
 
+    public ResponseEntity<?> forgotUser(Login login) {
+        log.info("Fetching User");
+        User existingUser = this.userRepo.findByEmailAndActive(login.getEmail(),Boolean.TRUE).orElseThrow(()-> new RuntimeException("User Not Found OR is InACtive"));
+        log.info("Sending User Details");
+        existingUser.setPasswordHash(encoder.encode(login.getPasswordHash()));
+        userRepo.save(existingUser);
+        return ResponseEntity.ok(Map.of("message","User Updated Successfully"));
+    }
+
     public Page<UserDTO> getUser(int page, int size) {
         log.info("Getting Records");
         Pageable pageable = PageRequest.of(page, size);
@@ -56,6 +66,16 @@ public class UserService {
 
     public ResponseEntity<?> createUser(UserDTO userDTO) {
         log.info("Creating User");
+        Optional<User> existingUser = userRepo.findByEmail(userDTO.getEmail());
+        if(existingUser == null){
+            throw new RuntimeException("User Already Exsists with EmailID");
+        }
+
+        existingUser = userRepo.findByUsername(userDTO.getUsername());
+        if(existingUser == null){
+            throw new RuntimeException("User Already Exsists with UserName");
+        }
+
         User user = ConvertorUtility.userDTOConvertor(userDTO);
         String password = passwordGeneratorUtility.generateRandomPassword();
         user.setPasswordHash(encoder.encode(password));
@@ -100,7 +120,7 @@ public class UserService {
 
         String token = authHeader.substring(7);
         String username = JwtUtil.extractUsername(token);
-        User userDetails = userRepo.findByUsername(username);
+        User userDetails = userRepo.findByUsername(username).orElseThrow(()-> new RuntimeException("User Doen't exsist with userName"));
 
         if (!JwtUtil.validateToken(token, userDetails)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expired or invalid");

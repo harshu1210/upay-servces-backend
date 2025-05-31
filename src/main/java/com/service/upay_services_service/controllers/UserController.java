@@ -42,6 +42,11 @@ public class UserController {
         return userService.login(login);
     }
 
+    @PutMapping("forgotUser")
+    public ResponseEntity<?> forgotUser(@RequestBody Login login) {
+        return userService.forgotUser(login);
+    }
+
     @GetMapping("getById")
     public User getUserById(@RequestParam("id") Long id) {
         return userService.getUserById(id);
