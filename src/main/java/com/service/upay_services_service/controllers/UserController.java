@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.service.upay_services_service.enitites.User;
 import com.service.upay_services_service.models.Login;
 import com.service.upay_services_service.models.UserDTO;
@@ -29,28 +31,31 @@ import jakarta.servlet.http.HttpServletRequest;
 @CrossOrigin(origins = "*")
 public class UserController {
     @GetMapping("getUser")
-    public Page<UserDTO> getUser(@RequestParam("size") int size, @RequestParam("page") int page) {
-        return userService.getUser(page, size);
+    public Page<UserDTO> getUser(HttpServletRequest request, @RequestParam("size") int size,
+            @RequestParam("page") int page) throws JsonMappingException, JsonProcessingException {
+        return userService.getUser(request, page, size);
     }
 
     @GetMapping("getCustomer")
-    public Page<UserDTO> getCustomer(@RequestParam("size") int size, @RequestParam("page") int page) {
-        return userService.getCustomer(page, size);
+    public Page<UserDTO> getCustomer(HttpServletRequest request, @RequestParam("size") int size,
+            @RequestParam("page") int page) throws JsonMappingException, JsonProcessingException {
+        return userService.getCustomer(request, page, size);
     }
 
     @GetMapping("getCustomerUser")
-    public List<String> getCustomerUser() {
-        return userService.getCustomerUser();
+    public List<String> getCustomerUser(HttpServletRequest request)
+            throws JsonMappingException, JsonProcessingException {
+        return userService.getCustomerUser(request);
     }
 
     @PostMapping("createUser")
-    public ResponseEntity<?> createUser(@RequestBody UserDTO UserDTO)
-            throws IllegalArgumentException, IllegalAccessException {
-        return userService.createUser(UserDTO);
+    public ResponseEntity<?> createUser(HttpServletRequest request, @RequestBody UserDTO UserDTO)
+            throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+        return userService.createUser(request, UserDTO);
     }
 
     @PostMapping("login")
-    public ResponseEntity<?> login(@RequestBody Login login) {
+    public ResponseEntity<?> login(@RequestBody Login login) throws JsonProcessingException {
         return userService.login(login);
     }
 
@@ -60,30 +65,33 @@ public class UserController {
     }
 
     @GetMapping("getById")
-    public User getUserById(@RequestParam("id") Long id) {
-        return userService.getUserById(id);
+    public User getUserById(HttpServletRequest request, @RequestParam("id") Long id)
+            throws JsonMappingException, JsonProcessingException {
+        return userService.getUserById(request, id);
     }
 
     @PostMapping("bulk/User")
-    public ResponseEntity<?> uploadUserCSV(@RequestParam("file") MultipartFile file)
-            throws IllegalArgumentException, IllegalAccessException {
-        return userService.uploadUserCSV(file);
+    public ResponseEntity<?> uploadUserCSV(HttpServletRequest request, @RequestParam("file") MultipartFile file)
+            throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+        return userService.uploadUserCSV(request, file);
     }
 
     @PostMapping("refreshToken")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request){
+    public ResponseEntity<?> refreshToken(HttpServletRequest request)
+            throws JsonMappingException, JsonProcessingException {
         return userService.refreshToken(request);
     }
 
     @PutMapping("updateUser")
-    public ResponseEntity<?> updateUser(@RequestBody UserDTO UserDTO)
-            throws IllegalArgumentException, IllegalAccessException {
-        return userService.updateUser(UserDTO);
+    public ResponseEntity<?> updateUser(HttpServletRequest request, @RequestBody UserDTO UserDTO)
+            throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+        return userService.updateUser(request, UserDTO);
     }
 
     @DeleteMapping("deleteById/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
-        return userService.deleteUser(id);
+    public ResponseEntity<?> deleteUser(HttpServletRequest request, @PathVariable("id") Long id)
+            throws JsonMappingException, JsonProcessingException {
+        return userService.deleteUser(request, id);
     }
 
     @Autowired

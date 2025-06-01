@@ -17,9 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.service.upay_services_service.enitites.Services;
 import com.service.upay_services_service.models.ServicesDTO;
 import com.service.upay_services_service.services.ServicesService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/upayServices/services/")
@@ -27,41 +31,46 @@ import com.service.upay_services_service.services.ServicesService;
 public class ServicesController {
 
     @PostMapping("createService")
-    public ResponseEntity<?> createService(@RequestBody ServicesDTO servicesDTO)
-            throws IllegalArgumentException, IllegalAccessException {
-        return servicesService.createService(servicesDTO);
+    public ResponseEntity<?> createService(HttpServletRequest request, @RequestBody ServicesDTO servicesDTO)
+            throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+        return servicesService.createService(request, servicesDTO);
     }
 
     @GetMapping("servicesList")
-    public Page<Services> getServices(@RequestParam("page") int page, @RequestParam("size") int size) {
-        return servicesService.getServices(page, size);
+    public Page<Services> getServices(HttpServletRequest request, @RequestParam("page") int page,
+            @RequestParam("size") int size) throws JsonMappingException, JsonProcessingException {
+        return servicesService.getServices(request, page, size);
     }
 
     @GetMapping("services")
-    public List<Services> getServicesList() {
-        return servicesService.getServicesList();
+    public List<Services> getServicesList(HttpServletRequest request)
+            throws JsonMappingException, JsonProcessingException {
+        return servicesService.getServicesList(request);
     }
 
     @GetMapping("id")
-    public Services getServicesById(@RequestParam("id") Long id) {
-        return servicesService.getServicesById(id);
+    public Services getServicesById(HttpServletRequest request, @RequestParam("id") Long id)
+            throws JsonMappingException, JsonProcessingException {
+        return servicesService.getServicesById(request, id);
     }
 
     @PostMapping("bulk/services")
-    public ResponseEntity<?> uploadDealersCSV(@RequestParam("file") MultipartFile file)
-            throws IllegalArgumentException, IllegalAccessException {
-        return servicesService.uploadServicesCSV(file);
+    public ResponseEntity<?> uploadDealersCSV(HttpServletRequest request, @RequestParam("file") MultipartFile file)
+            throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+        return servicesService.uploadServicesCSV(request, file);
     }
 
     @PutMapping("updateById")
-    public ResponseEntity<?> updateServices(@RequestParam("id") Long id, @RequestBody ServicesDTO servicesDTO)
-            throws IllegalArgumentException, IllegalAccessException {
-        return servicesService.updateService(id, servicesDTO);
+    public ResponseEntity<?> updateServices(HttpServletRequest request, @RequestParam("id") Long id,
+            @RequestBody ServicesDTO servicesDTO)
+            throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+        return servicesService.updateService(request, id, servicesDTO);
     }
 
     @DeleteMapping("deleteById/{id}")
-    public ResponseEntity<?> deleteDealer(@PathVariable Long id) {
-        return servicesService.deleteService(id);
+    public ResponseEntity<?> deleteDealer(HttpServletRequest request, @PathVariable Long id)
+            throws JsonMappingException, JsonProcessingException {
+        return servicesService.deleteService(request, id);
     }
 
     @Autowired

@@ -14,13 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.service.upay_services_service.enitites.Services;
 import com.service.upay_services_service.models.ServicesDTO;
 import com.service.upay_services_service.repositories.ServicesRepo;
 import com.service.upay_services_service.utility.BulkUploadUtility;
 import com.service.upay_services_service.utility.ConvertorUtility;
+import com.service.upay_services_service.utility.JwtUtil;
 import com.service.upay_services_service.utility.RequiredParams;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -28,8 +32,11 @@ import lombok.extern.slf4j.Slf4j;
 public class ServicesService {
 
   @Transactional
-  public ResponseEntity<?> createService(ServicesDTO servicesDTO)
-      throws IllegalArgumentException, IllegalAccessException {
+  public ResponseEntity<?> createService(HttpServletRequest request, ServicesDTO servicesDTO)
+      throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+    if (!jwtUtil.validateToken(request)) {
+      throw new RuntimeException("Invalid Token");
+    }
     log.info("Checking for Required Parameters");
     RequiredParams.requiredParams(servicesDTO, requiredParams);
     log.info("Checking for existing Service");
@@ -49,7 +56,11 @@ public class ServicesService {
     return ResponseEntity.ok(Map.of("message", "Service Registered Successfully"));
   }
 
-  public Page<Services> getServices(int page, int size) {
+  public Page<Services> getServices(HttpServletRequest request, int page, int size)
+      throws JsonMappingException, JsonProcessingException {
+    if (!jwtUtil.validateToken(request)) {
+      throw new RuntimeException("Invalid Token");
+    }
     log.info("Fetching Services List");
     Pageable pageable = PageRequest.of(page, size);
     Page<Services> services = servicesRepo.findAll(pageable);
@@ -57,14 +68,22 @@ public class ServicesService {
     return services;
   }
 
-  public List<Services> getServicesList() {
+  public List<Services> getServicesList(HttpServletRequest request)
+      throws JsonMappingException, JsonProcessingException {
+    if (!jwtUtil.validateToken(request)) {
+      throw new RuntimeException("Invalid Token");
+    }
     log.info("Fetching Services List");
     List<Services> services = servicesRepo.findAll();
     log.info("Fetched Services list");
     return services;
   }
 
-  public Services getServicesById(Long id) {
+  public Services getServicesById(HttpServletRequest request, Long id)
+      throws JsonMappingException, JsonProcessingException {
+    if (!jwtUtil.validateToken(request)) {
+      throw new RuntimeException("Invalid Token");
+    }
     log.info("Fetching Services By ID");
     Services services = servicesRepo.findById(id)
         .orElseThrow(() -> new RuntimeException("No Service Present with the Service ID: " + id));
@@ -73,18 +92,25 @@ public class ServicesService {
   }
 
   @Transactional
-  public ResponseEntity<?> uploadServicesCSV(MultipartFile file)
-      throws IllegalArgumentException, IllegalAccessException {
+  public ResponseEntity<?> uploadServicesCSV(HttpServletRequest request, MultipartFile file)
+      throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+    if (!jwtUtil.validateToken(request)) {
+      throw new RuntimeException("Invalid Token");
+    }
     List<ServicesDTO> servicesDTOList = new ArrayList<ServicesDTO>();
     servicesDTOList = BulkUploadUtility.csvServicesConvertor(file);
     for (ServicesDTO servicesDTO : servicesDTOList) {
-      createService(servicesDTO);
+      createService(request, servicesDTO);
     }
     return ResponseEntity.ok(Map.of("message", "Services Registered Successfully"));
   }
 
   @Transactional
-  public ResponseEntity<?> deleteService(Long id) {
+  public ResponseEntity<?> deleteService(HttpServletRequest request, Long id)
+      throws JsonMappingException, JsonProcessingException {
+    if (!jwtUtil.validateToken(request)) {
+      throw new RuntimeException("Invalid Token");
+    }
     log.info("Fetching Services by ID");
     Services service = servicesRepo.findById(id).orElseThrow(() -> new RuntimeException("No Service Found By ID"));
     log.info("Fetched Service By ID\nDeleting Service");
@@ -95,8 +121,11 @@ public class ServicesService {
   }
 
   @Transactional
-  public ResponseEntity<?> updateService(Long id, ServicesDTO servicesDTO)
-      throws IllegalArgumentException, IllegalAccessException {
+  public ResponseEntity<?> updateService(HttpServletRequest request, Long id, ServicesDTO servicesDTO)
+      throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+    if (!jwtUtil.validateToken(request)) {
+      throw new RuntimeException("Invalid Token");
+    }
     RequiredParams.requiredParams(servicesDTO, requiredParams);
     log.info("Fetching Service By ID");
     Services existingServices = servicesRepo.findById(id)
@@ -119,5 +148,8 @@ public class ServicesService {
 
   @Autowired
   private userEmailService userEmailService;
+
+  @Autowired
+  private JwtUtil jwtUtil;
 
 }

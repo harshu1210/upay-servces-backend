@@ -15,9 +15,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.service.upay_services_service.enitites.Dealers;
 import com.service.upay_services_service.models.DealersDTO;
 import com.service.upay_services_service.services.DealersService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/upayServices/dealers/")
@@ -25,36 +29,39 @@ import com.service.upay_services_service.services.DealersService;
 public class DealersController {
 
     @GetMapping("getDealers")
-    public Page<Dealers> getDealers(@RequestParam("size") int size, @RequestParam("page") int page) {
-        return dealersService.getDealers(page, size);
+    public Page<Dealers> getDealers(HttpServletRequest request, @RequestParam("size") int size,
+            @RequestParam("page") int page) throws JsonMappingException, JsonProcessingException {
+        return dealersService.getDealers(request, page, size);
     }
 
     @PostMapping("createDealer")
-    public ResponseEntity<?> createDealer(@RequestBody DealersDTO dealersDTO)
-            throws IllegalArgumentException, IllegalAccessException {
-        return dealersService.createDealers(dealersDTO);
+    public ResponseEntity<?> createDealer(HttpServletRequest request, @RequestBody DealersDTO dealersDTO)
+            throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+        return dealersService.createDealers(request, dealersDTO);
     }
 
     @GetMapping("getById")
-    public Dealers getDealersById(@RequestParam("id") Long id) {
-        return dealersService.getDealersById(id);
+    public Dealers getDealersById(HttpServletRequest request, @RequestParam("id") Long id)
+            throws JsonMappingException, JsonProcessingException {
+        return dealersService.getDealersById(request, id);
     }
 
     @PostMapping("bulk/dealers")
-    public ResponseEntity<?> uploadDealersCSV(@RequestParam("file") MultipartFile file)
-            throws IllegalArgumentException, IllegalAccessException {
-        return dealersService.uploadDealersCSV(file);
+    public ResponseEntity<?> uploadDealersCSV(HttpServletRequest request, @RequestParam("file") MultipartFile file)
+            throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+        return dealersService.uploadDealersCSV(request, file);
     }
 
     @PutMapping("updateDealer")
-    public ResponseEntity<?> updateDealer(@RequestBody DealersDTO dealersDTO)
-            throws IllegalArgumentException, IllegalAccessException {
-        return dealersService.updateDealer(dealersDTO);
+    public ResponseEntity<?> updateDealer(HttpServletRequest request, @RequestBody DealersDTO dealersDTO)
+            throws IllegalArgumentException, IllegalAccessException, JsonMappingException, JsonProcessingException {
+        return dealersService.updateDealer(request, dealersDTO);
     }
 
     @DeleteMapping("deleteById/{id}")
-    public ResponseEntity<?> deleteDealer(@PathVariable("id") Long id) {
-        return dealersService.deleteDealers(id);
+    public ResponseEntity<?> deleteDealer(HttpServletRequest request, @PathVariable("id") Long id)
+            throws JsonMappingException, JsonProcessingException {
+        return dealersService.deleteDealers(request, id);
     }
 
     @Autowired
