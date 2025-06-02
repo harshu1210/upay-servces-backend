@@ -1,7 +1,5 @@
 package com.service.upay_services_service.models;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,4 +16,5 @@ public class UserDTO {
     private String role;
     private String phoneNumber;
     private String status;
+    private String customerID;
 }

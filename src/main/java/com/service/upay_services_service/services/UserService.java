@@ -11,17 +11,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.service.upay_services_service.enitites.Dealers;
 import com.service.upay_services_service.enitites.User;
 import com.service.upay_services_service.models.Login;
 import com.service.upay_services_service.models.UserDTO;
@@ -30,7 +27,6 @@ import com.service.upay_services_service.utility.ConvertorUtility;
 import com.service.upay_services_service.utility.JwtUtil;
 import com.service.upay_services_service.utility.passwordGeneratorUtility;
 
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,10 +42,10 @@ public class UserService {
             throw new RuntimeException("Password is Incorrect");
         }
         log.info("Sending User Details");
-        UserDTO userDTO = ConvertorUtility.userDTOConvertor(existingUser);
+        UserDTO userDTO = ConvertorUtility.userConvertor(existingUser);
         String authToken = jwtUtil.generateToken(userDTO); // 30 mins
         Map map = new HashMap();
-        map.put("data", ConvertorUtility.userDTOConvertor(existingUser));
+        map.put("data", ConvertorUtility.userConvertor(existingUser));
         map.put("auth", authToken);
         return ResponseEntity.ok(map);
     }
@@ -103,15 +99,20 @@ public class UserService {
         }
 
         User user = ConvertorUtility.userDTOConvertor(userDTO);
+        if(user.getRole().equals("CUSTOMER")){
+            user.setCustomerID(passwordGeneratorUtility.generateRandomPassword());
+        }
         String password = passwordGeneratorUtility.generateRandomPassword();
         user.setPasswordHash(encoder.encode(password));
         userRepo.save(user);
+        if(user.getRole().equals("CUSTOMER")){
+            userEmailService.sendCustomerRegistrationEmail(userDTO.getEmail(), userDTO.getFullName(), password, user.getCustomerID());    
+        }
         userEmailService.sendRegistrationEmail(userDTO.getEmail(), userDTO.getFullName(), password);
         return ResponseEntity.ok(Map.of("message", "User Registered Successfully"));
     }
 
     public User getUserById(HttpServletRequest request, Long id) throws JsonMappingException, JsonProcessingException {
-        // TODO Auto-generated method stub
         if (!jwtUtil.validateToken(request)) {
             throw new RuntimeException("Invalid Token");
         }
@@ -120,7 +121,6 @@ public class UserService {
 
     public ResponseEntity<?> uploadUserCSV(HttpServletRequest request, MultipartFile file)
             throws JsonMappingException, JsonProcessingException {
-        // TODO Auto-generated method stub
         if (!jwtUtil.validateToken(request)) {
             throw new RuntimeException("Invalid Token");
         }
@@ -133,7 +133,7 @@ public class UserService {
             throw new RuntimeException("Invalid Token");
         }
         log.info("Fetching Existing User");
-        User existingUser = userRepo.findById(userDTO.getId())
+        User existingUser = userRepo.findByEmail(userDTO.getEmail())
                 .orElseThrow(() -> new RuntimeException("USer Doesn't exsist"));
         User updatedUser = existingUser;
         updatedUser.setActive(userDTO.getActive());
@@ -167,7 +167,7 @@ public class UserService {
         JsonNode node = mapper.readTree(details);
         User userDetails = userRepo.findByUsername(node.get("username").toString())
                 .orElseThrow(() -> new RuntimeException("User Doen't exsist with userName"));
-        UserDTO userDTO= ConvertorUtility.userDTOConvertor(userDetails);
+        UserDTO userDTO = ConvertorUtility.userConvertor(userDetails);
 
         if (!jwtUtil.validateToken(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expired or invalid");

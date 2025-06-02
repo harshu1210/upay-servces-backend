@@ -42,7 +42,7 @@ public class UserController {
         return userService.getCustomer(request, page, size);
     }
 
-    @GetMapping("getCustomerUser")
+    @GetMapping("getCustomerIDs")
     public List<String> getCustomerUser(HttpServletRequest request)
             throws JsonMappingException, JsonProcessingException {
         return userService.getCustomerUser(request);

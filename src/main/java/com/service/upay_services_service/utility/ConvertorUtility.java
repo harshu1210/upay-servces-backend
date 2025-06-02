@@ -62,7 +62,7 @@ public class ConvertorUtility {
         return user;
     }
 
-    public static UserDTO userDTOConvertor(User user){
+    public static UserDTO userConvertor(User user){
         UserDTO userDTO = new UserDTO();
         userDTO.setEmail(user.getEmail());
         userDTO.setActive(user.isActive());
@@ -73,10 +73,14 @@ public class ConvertorUtility {
         return userDTO;
     }
 
-    public static Orders userDTOConvertor(OrdersDTO orderDTO){
+    public static Orders orderDTOConvertor(OrdersDTO orderDTO){
         Orders order = new Orders();
         order.setServices(orderDTO.getServices());
         order.setVendor(orderDTO.getVendor());
+        order.setCustomerID(orderDTO.getCustomerID());
+        order.setStatus(orderDTO.getStatus());
+        order.setOrderHistory(orderDTO.getOrderHistory());
+        order.setOrderID(orderDTO.getOrderID());
         return order;
     }
 

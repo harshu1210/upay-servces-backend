@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +41,13 @@ public class DealersService {
     Page<Dealers> dealers = dealersRepo.findAll(pageable);
     log.info("Fetched Dealers list");
     return dealers;
+  }
+
+  public List<String> getDealersCompanyName(HttpServletRequest request) {
+     if (!jwtUtil.validateToken(request)) {
+      throw new RuntimeException("Invalid Token");
+    }  
+    return dealersRepo.findAllCompanyName();
   }
 
   public Dealers getDealersById(HttpServletRequest request, Long id)
@@ -172,5 +178,6 @@ public class DealersService {
   private userEmailService userEmailService;
   @Autowired
   private JwtUtil jwtUtil;
+  
 
 }

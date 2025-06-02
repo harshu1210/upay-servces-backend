@@ -6,12 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.service.upay_services_service.enitites.User;
@@ -67,6 +64,30 @@ public class JwtUtil {
         }
     }
 
+    public String createdBY(HttpServletRequest request) {
+        try {
+            final String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return "";
+            }
+
+            String token = authHeader.substring(7);
+            String jsonPayload = extractSubject(token);
+            JsonNode node = mapper.readTree(jsonPayload);
+
+            if (!node.has("email")) {
+                System.out.println("Missing 'email' field in token payload");
+                return "";
+            }
+
+            return node.get("email").asText();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     // --- Extract subject (the embedded user JSON) ---
     public String extractSubject(String token) {
         return Jwts.parser()
@@ -89,6 +110,7 @@ public class JwtUtil {
                 .getExpiration();
     }
 
+    // private final String SECRET = secretKeyUtility.generateSecretKey();
     private final String SECRET = secretKeyUtility.generateSecretKey();
     private final ObjectMapper mapper = new ObjectMapper();
     @Autowired

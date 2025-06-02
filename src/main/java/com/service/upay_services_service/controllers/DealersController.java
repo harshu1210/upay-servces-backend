@@ -1,5 +1,7 @@
 package com.service.upay_services_service.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,11 @@ public class DealersController {
     public Page<Dealers> getDealers(HttpServletRequest request, @RequestParam("size") int size,
             @RequestParam("page") int page) throws JsonMappingException, JsonProcessingException {
         return dealersService.getDealers(request, page, size);
+    }
+
+    @GetMapping("getDealersCompanyName")
+    public List<String> getDealersCompanyName(HttpServletRequest request) throws JsonMappingException, JsonProcessingException {
+        return dealersService.getDealersCompanyName(request);
     }
 
     @PostMapping("createDealer")

@@ -41,6 +41,7 @@ public class User {
     private String phoneNumber;
 
     private String status;
+    private String customerID;
 
     @Column(nullable = false)
     private boolean active = true;

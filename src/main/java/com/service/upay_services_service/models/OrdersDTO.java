@@ -13,4 +13,7 @@ public class OrdersDTO {
     private String status;
     private String services;
     private String orderID;
+    private String customerID;
+    private String createdBy;
+    private OrderHistory orderHistory;
 }
